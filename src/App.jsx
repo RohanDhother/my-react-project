@@ -5,6 +5,9 @@ import reactLogo from './assets/react.svg'
 function App() {
   const [rotationDirection, setRotationDirection] = useState('forward');
   const imageRef = useRef(null)
+  const [isMouseMoving, setIsMouseMoving] = useState(false);
+  const [stillnessTime, setStillnessTime] = useState(0);
+  const [isOnPage, setIsOnPage] = useState(true);
 
   const handleClick = () => {
     setRotationDirection(rotationDirection === 'forward' ? 'backward' : 'forward');
@@ -26,6 +29,48 @@ function App() {
         window.removeEventListener('mousemove', handleMouseMove);
       };
   });
+
+  useEffect(() => {
+    let timerId;
+
+    const handleMouseMove = () => {
+      setIsOnPage(true);
+      setIsMouseMoving(true);
+      clearTimeout(timerId);
+      setStillnessTime(0);
+      timerId = setTimeout(() => {
+        setIsMouseMoving(false);
+      }, 100);
+    };
+
+    const handleMouseLeave = () => {
+      clearTimeout(timerId);
+      setStillnessTime(0);
+      setIsOnPage(false);
+    }
+
+    window.addEventListener('mouseout', handleMouseLeave);
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mouseout', handleMouseLeave);
+      window.removeEventListener('mousemove', handleMouseMove);
+      clearTimeout(timerId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isMouseMoving && isOnPage) {
+      const intervalId = setInterval(() => {
+        setStillnessTime((prevTime) => prevTime + 1);
+      }, 1000);
+
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
+  }, [isMouseMoving]);
+
   return (
     <div>
       <div class='image-div'>
@@ -37,6 +82,7 @@ function App() {
             onClick={handleClick}
           />
           </div>
+          <p>Mouse Stillness Time: {stillnessTime} seconds</p>
       </div>
     </div>
   );
