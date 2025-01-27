@@ -41,11 +41,17 @@
   color: #888;
 }
 
-.react-icon {
-  width: 100px; 
+.image-div {
+  width: 100px;
   height: 100px;
+}
+
+
+.react-icon {
+  width: 100%; 
+  height: 100%;
   transition: transform 0.5s ease-in-out;
-  animation: rotate 2s linear infinite;
+  animation: rotate 4s linear infinite;
 }
 
 .rotating-forward {
